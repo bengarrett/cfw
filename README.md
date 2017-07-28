@@ -8,6 +8,12 @@ _[CFWheels](https://cfwheels.org/) is an open source [CFML (ColdFusion Markup La
 
 I created this small package as I have been migrating old CFWheels web applications over to Go. They had a few CFWheels dependencies that needed to be recreated to ensure a smooth transition.
 
+## Import
+
+```Go
+import "github.com/bengarrett/cfw"
+```
+
 ### `DeObfuscate`
 
 ```Go
