@@ -40,7 +40,7 @@ Would return `Wheels Is A Framework`
 println(cfw.Hyphenize("wheelsIsAFramework"))
 ```
 
-Would return `Wheels Is A Framework`
+Would return `wheels-is-a-framework`
 
 ### `Obfuscate`
 
