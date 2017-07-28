@@ -1,6 +1,6 @@
 // Package cfw contains ports of a few selected CFWheels helpers that
 // are used for string manipulation and have no Go equivalent.
-// © Ben Garrett
+// © Ben Garrett https://github.com/bengarrett/cfw
 package cfw
 
 import (
@@ -172,7 +172,7 @@ func Obfuscate(s string) string {
 }
 
 // StripLinks removes all HTML links from s, leaving just the link text.
-// A port of CFWheels StripLinks() helper.
+// A port of CFWheels stripLinks() helper.
 // CFML source: https://github.com/cfwheels/cfwheels/blob/daa7c43fc993cab00f52cf8ac881e6cc93c02fe1/wheels/view/sanitize.cfm
 func StripLinks(s string) string {
 	re := regexp.MustCompile(`<a.*?>(.*?)</a>`)
@@ -261,10 +261,10 @@ func Truncate(s string, new string, n int) string {
 	if new == "" {
 		new = "..."
 	}
-	if len(s) <= n {
+	if utf8.RuneCountInString(s) <= n {
 		return s
 	}
-	return s[0:n-len(new)] + new
+	return s[0:n-utf8.RuneCountInString(new)] + new
 }
 
 // WordTruncate truncates s to the specified number of words and replaces the remaining characters with the specified

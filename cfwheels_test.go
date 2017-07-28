@@ -99,6 +99,13 @@ func TestExcerpt(t *testing.T) {
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+	// utf-8 test
+	s = "The quick brown 🦊 jumps over the lazy 🐕"
+	a = Excerpt(s, "💬", "brown 🦊", 0)
+	e = "💬brown 🦊💬"
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
 }
 
 // Source of test values:
@@ -141,6 +148,13 @@ func TestHumanize(t *testing.T) {
 	if a != e {
 		t.Errorf("mismatch, got: %q, want: %q", a, e)
 	}
+	// utf-8 test
+	s = "theQuickBrown🦊JumpsOverTheLazy🐕"
+	a = Humanize(s, "")
+	e = "The Quick Brown🦊 Jumps Over The Lazy🐕"
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
 }
 
 // Source of test values:
@@ -182,6 +196,13 @@ func TestHyphenize(t *testing.T) {
 	a = Hyphenize(s)
 	if a != e {
 		t.Errorf("mismatch, got: %q, want: %q", a, e)
+	}
+	// utf-8 test
+	s = "TheQuickBrown🦊JumpsOverTheLazy🐕"
+	a = Hyphenize(s)
+	e = "the-quick-brown🦊-jumps-over-the-lazy🐕"
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
 }
 
@@ -277,6 +298,13 @@ func TestStripLinks(t *testing.T) {
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+	// utf-8 test
+	s = `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
+	a = StripLinks(s)
+	e = `The quick <b>brown 🦊</b> jumps over the lazy 🐕`
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
 }
 
 // Source of test values:
@@ -286,6 +314,13 @@ func TestStripTags(t *testing.T) {
 	s = `<h1>this</h1><p><a href="http://www.google.com" title="google">is</a></p><p>a <a href="mailto:someone@example.com" title="invalid email">test</a> to<br><a name="anchortag">see</a> if this works or not.</p>`
 	a = StripTags(s)
 	e = "thisisa test tosee if this works or not."
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
+	// utf-8 test
+	s = `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
+	a = StripTags(s)
+	e = `The quick brown 🦊 jumps over the lazy 🐕`
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
@@ -421,6 +456,13 @@ func TestTruncate(t *testing.T) {
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+	// utf-8 test
+	s = "The quick brown 🦊 jumps over the lazy 🐕"
+	a = Truncate(s, "💬", 21)
+	e = `The quick brown 🦊💬`
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
 }
 
 // Source of test values:
@@ -430,6 +472,13 @@ func TestWordTruncate(t *testing.T) {
 	s = "CFWheels is a framework for ColdFusion"
 	a = WordTruncate(s, "", 4)
 	e = "CFWheels is a framework..."
+	if a != e {
+		t.Errorf("mismatch, got: %v, want: %v", a, e)
+	}
+	// utf-8 test
+	s = "The quick brown 🦊 jumps over the lazy 🐕"
+	a = WordTruncate(s, "💬", 4)
+	e = `The quick brown 🦊💬`
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
