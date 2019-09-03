@@ -1,12 +1,17 @@
-# CFW
+# cfw
 
-## Package cfw contains ports of a few selected CFWheels helpers that are used for string manipulation and have no Go equivalent
+![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat-square)
+![Travis (.org)](https://img.shields.io/travis/bengarrett/cfw?style=flat-square)
+&nbsp;
+[![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw) [![GoDoc](https://godoc.org/github.com/bengarrett/cfw?status.svg)](https://godoc.org/github.com/bengarrett/cfw)
 
-[![Build Status](https://travis-ci.org/bengarrett/cfw.svg?branch=master)](https://travis-ci.org/bengarrett/cfw) [![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw) [![GoDoc](https://godoc.org/github.com/bengarrett/cfw?status.svg)](https://godoc.org/github.com/bengarrett/cfw)
+### Package cfw contains ports of a few selected CFWheels helpers that are used for string manipulation and have no Go equivalent
 
 _[CFWheels](https://cfwheels.org/) is an open source [CFML (ColdFusion Markup Language)](http://lucee.org/) framework inspired by Ruby on Rails that provides fast application development, a great organization system for your code, and is just plain fun to use._
 
 I created this small package as I have been migrating CFWheels web applications over to Go. They had a few CFWheels dependencies that needed to be recreated to ensure a smooth transition.
+
+☕ [Find cfw useful, why not buy me a coffee?](https://www.buymeacoffee.com/4rtEGvUIY)
 
 ## Import
 
