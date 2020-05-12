@@ -1,112 +1,93 @@
 # cfw
 
-![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat-square)
-![Travis (.org)](https://img.shields.io/travis/bengarrett/cfw?style=flat-square)
-&nbsp;
-[![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw) [![GoDoc](https://godoc.org/github.com/bengarrett/cfw?status.svg)](https://godoc.org/github.com/bengarrett/cfw)
+![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw) 
+[![api](https://img.shields.io/static/v1?label=api&message=docs&color=<COLOR>&style=flat)](https://pkg.go.dev/github.com/bengarrett/cfw)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/bengarrett/cfw)](https://github.com/bengarrett/cfw/releases)
 
-### Package cfw contains ports of a few selected CFWheels helpers that are used for string manipulation and have no Go equivalent
+#### Package cfw contains ports of a few selected CFWheels v1 helpers that are used for string manipulation and have no Go equivalent.
 
-_[CFWheels](https://cfwheels.org/) is an open source [CFML (ColdFusion Markup Language)](http://lucee.org/) framework inspired by Ruby on Rails that provides fast application development, a great organization system for your code, and is just plain fun to use._
+>[CFWheels](https://cfwheels.org/) is an open-source [CFML (ColdFusion Markup Language)](http://lucee.org/) framework inspired by Ruby on Rails that provides fast application development, a great organization system for your code, and is just plain fun to use.
 
-I created this small package as I have been migrating CFWheels web applications over to Go. They had a few CFWheels dependencies that needed to be recreated to ensure a smooth transition.
+I created this package as I had been migrating CFWheels web applications over to Go. They had a few dependencies that need recreation to ensure a smooth transition.
 
 ☕ [Find cfw useful, why not buy me a coffee?](https://www.buymeacoffee.com/4rtEGvUIY)
 
-## Import
+## Documentation
 
-```Go
-import "github.com/bengarrett/cfw"
-```
+https://pkg.go.dev/github.com/bengarrett/cfw
 
 ## Usages
 
-### `DeObfuscate`
-
 ```Go
-println(cfw.DeObfuscate("b226582"))
+package main
+
+import "github.com/bengarrett/cfw"
+
+func main() {
+
+	// Obfuscate / DeObfuscate
+	println(cfw.Obfuscate("1234"))
+    println(cfw.DeObfuscate("a4363c"))
+    
+    // Excerpt
+	println(cfw.Excerpt(
+		"CFWheels: testing the excerpt view helper to see if it works or not.",
+        "[more]", "excerpt view helper", 10))
+
+    // Humanize
+    println(cfw.Humanize("wheelsIsAFramework",""))
+
+    // Hyphenize
+    println(cfw.Hyphenize("wheelsIsAFramework"))
+
+    // StripLinks
+    println(cfw.StripLinks(
+        `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`))
+
+    // StripTags
+    println(cfw.StripTags(
+        `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`))
+
+    // TimeDistance
+    add7Seconds := from.Add(time.Second * time.Duration(7)
+    println(cfw.TimeDistance(time.Now(), add7Seconds), true))
+
+    // Truncate
+    println(cfw.Truncate(
+        "CFW contains Go ports of a few selected CFWheels helpers.", "", 15))
+
+    // WordTruncate
+    println(cfw.WordTruncate(
+        "CFW contains Go ports of a few selected CFWheels helpers.", "", 4))
+    println(cfw.WordTruncate(
+        "CFW contains Go ports of a few selected CFWheels helpers.", " 🥰", 3))
+}
 ```
 
-Would return `15765`
+Will print
 
-### `Excerpt`
-
-```Go
-s := "CFWheels: testing the excerpt view helper to see if it works or not."
-p := "excerpt view helper"
-println(cfw.Excerpt(s, "[more]", p, 10))`
+```bash
+# Obfuscate / DeObfuscate
+a4363c
+1234
+# Excerpt
+[more]sting the excerpt view helper to see if[more]
+# Humanize
+Wheels Is A Framework
+# Hyphenize
+wheels-is-a-framework
+# StripLinks
+Go to the <strong>GitHub</strong> repo!
+# StripTags
+Go to the GitHub repo!
+# TimeDistance
+less than 10 seconds
+# Truncate
+CFW contains...
+# WordTruncate
+CFW contains Go ports...
+CFW contains Go 🥰
 ```
 
-Would return `[more]sting the excerpt view helper to see if[more]`
-
-### `Humanize`
-
-```Go
-println(cfw.Humanize("wheelsIsAFramework,""))
-```
-
-Would return `Wheels Is A Framework`
-
-### `Hyphenize`
-
-```Go
-println(cfw.Hyphenize("wheelsIsAFramework"))
-```
-
-Would return `wheels-is-a-framework`
-
-### `Obfuscate`
-
-```Go
-println(cfw.Obfuscate("15765"))
-```
-
-Would return `b226582`
-
-### `StripLinks`
-
-```Go
-l := `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`
-println(cfw.StripLinks(l))
-```
-
-Would return `Go to the <strong>GitHub</strong> repo!`
-
-### `StripTags`
-
-```Go
-l := `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`
-println(cfw.StripTags(l))
-```
-
-Would return `Go to the GitHub repo!`
-
-### `TimeDistance`
-
-```Go
-from := time.Now()
-to := from.Add(time.Second * time.Duration(7)) // add 7 seconds
-println(cfw.TimeDistance(from, to, true))
-```
-
-Would return `less than 10 seconds`
-
-### `Truncate`
-
-```Go
-s := `CFW contains Go ports of a few selected CFWheels helpers.`
-println(cfw.Truncate(s, "", 15))
-
-```
-
-Would return `CFW contains...`
-
-### `WordTruncate`
-
-```Go
-s := `CFW contains Go ports of a few selected CFWheels helpers.`
-println(cfw.WordTruncate(s, "", 4))
-
-```
-
-Would return `CFW contains Go ports...`
+##### Copyright © 2020 [Ben Garrett](mailto:code.by.ben@gmail.com), [MIT License](https://pkg.go.dev/github.com/fluhus/godoc-tricks?tab=licenses)
