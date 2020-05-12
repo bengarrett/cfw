@@ -19,5 +19,5 @@ git add . &&
     git commit -m "$newcmmt" &&
     git tag -a $newtag -m "$newcmmt" &&
     git push origin $newtag &&
-    goreleaser --release-notes changelog.md &&
+    goreleaser --release-notes changelog.md --rm-dist &&
     go get github.com/bengarrett/cfw
