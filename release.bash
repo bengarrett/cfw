@@ -22,5 +22,8 @@ git add . &&
 goreleaser --release-notes changelog.md --rm-dist &&
     go get github.com/bengarrett/cfw
 
-# note to delete a remote tag
+# notes
+# to delete a local tag
 # git tag --delete tagname
+# to delete a remote tag
+# git push --delete origin tagname
