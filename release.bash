@@ -21,3 +21,6 @@ git add . &&
     git push origin $newtag &&
     goreleaser --release-notes changelog.md --rm-dist &&
     go get github.com/bengarrett/cfw
+
+# note to delete a remote tag
+# git tag --delete tagname
