@@ -36,7 +36,7 @@ func main() {
         "[more]", "excerpt view helper", 10))
 
     // Humanize
-    println(cfw.Humanize("wheelsIsAFramework",""))
+    println(cfw.Humanize("wheelsIsAFramework", nil))
 
     // Hyphenize
     println(cfw.Hyphenize("wheelsIsAFramework"))
