@@ -53,10 +53,10 @@ func ExampleExcerpt() {
 
 func TestExcerpt(t *testing.T) {
 	type args struct {
-		s      string
-		new    string
-		phrase string
-		n      int
+		s       string
+		replace string
+		phrase  string
+		n       int
 	}
 	const s = "CFWheels: testing the excerpt view helper to see if it works or not."
 	tests := []struct {
@@ -75,7 +75,7 @@ func TestExcerpt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Excerpt(tt.args.s, tt.args.new, tt.args.phrase, tt.args.n); got != tt.want {
+			if got := Excerpt(tt.args.s, tt.args.replace, tt.args.phrase, tt.args.n); got != tt.want {
 				t.Errorf("Excerpt() = %v, want %v", got, tt.want)
 			}
 		})
@@ -83,8 +83,8 @@ func TestExcerpt(t *testing.T) {
 }
 
 func ExampleHumanize() {
-	fmt.Println(Humanize("helloWorldExample", ""))
-	fmt.Println(Humanize("golangModOrVgo?", "MOD VGO"))
+	fmt.Println(Humanize("helloWorldExample", nil))
+	fmt.Println(Humanize("golangModOrVgo?", []string{"MOD", "VGO"}))
 	// Output: Hello World Example
 	// Golang MOD Or VGO?
 }
@@ -92,7 +92,7 @@ func ExampleHumanize() {
 func TestHumanize(t *testing.T) {
 	type args struct {
 		s      string
-		except string
+		except []string
 	}
 	tests := []struct {
 		name string
@@ -100,14 +100,14 @@ func TestHumanize(t *testing.T) {
 		want string
 	}{
 		// values https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/humanize.cfc
-		{"empty", args{"", ""}, ""},
-		{"lcase", args{"wheelsIsAFramework", ""}, "Wheels Is A Framework"},
-		{"title", args{"WheelsIsAFramework", ""}, "Wheels Is A Framework"},
-		{"ucase", args{"CFML", "CFML"}, "CFML"},
-		{"except", args{"ACfmlFramework", "CFML"}, "A CFML Framework"},
-		{"err 1", args{"wheelsIsACFMLFramework", ""}, "Wheels Is ACFML Framework"},
-		{"same", args{"Some Input", ""}, "Some Input"},
-		{"emoji", args{"theQuickBrown🦊JumpsOverTheLazy🐕", ""}, "The Quick Brown🦊 Jumps Over The Lazy🐕"},
+		{"empty", args{"", nil}, ""},
+		{"lcase", args{"wheelsIsAFramework", nil}, "Wheels Is A Framework"},
+		{"title", args{"WheelsIsAFramework", nil}, "Wheels Is A Framework"},
+		{"ucase", args{"CFML", []string{"CFML"}}, "CFML"},
+		{"except", args{"ACfmlFramework", []string{"CFML"}}, "A CFML Framework"},
+		{"err 1", args{"wheelsIsACFMLFramework", nil}, "Wheels Is ACFML Framework"},
+		{"same", args{"Some Input", nil}, "Some Input"},
+		{"emoji", args{"theQuickBrown🦊JumpsOverTheLazy🐕", nil}, "The Quick Brown🦊 Jumps Over The Lazy🐕"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -327,9 +327,9 @@ func ExampleTruncate() {
 
 func TestTruncate(t *testing.T) {
 	type args struct {
-		s   string
-		new string
-		n   int
+		s       string
+		replace string
+		n       int
 	}
 	tests := []struct {
 		name string
@@ -345,7 +345,7 @@ func TestTruncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Truncate(tt.args.s, tt.args.new, tt.args.n); got != tt.want {
+			if got := Truncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
 				t.Errorf("Truncate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -361,9 +361,9 @@ func ExampleWordTruncate() {
 
 func TestWordTruncate(t *testing.T) {
 	type args struct {
-		s   string
-		new string
-		n   int
+		s       string
+		replace string
+		n       int
 	}
 	tests := []struct {
 		name string
@@ -377,7 +377,7 @@ func TestWordTruncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := WordTruncate(tt.args.s, tt.args.new, tt.args.n); got != tt.want {
+			if got := WordTruncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
 				t.Errorf("WordTruncate() = %v, want %v", got, tt.want)
 			}
 		})

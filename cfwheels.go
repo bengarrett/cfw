@@ -90,18 +90,16 @@ func Excerpt(s, replace, phrase string, n int) string {
 }
 
 // Humanize returns readable text by separating camelCase strings to multiple, capitalized words.
-func Humanize(s, except string) string {
+func Humanize(s string, except []string) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/632ea90547da368cddd77cefe17f42a7eda871e0/wheels/global/util.cfm
 	// Add a space before every capitalized word.
 	s = regexp.MustCompile(`([A-Z])`).ReplaceAllString(s, " $1")
 	// Fix abbreviations so they form a word again (example: aURLVariable).
 	s = regexp.MustCompile(`([A-Z])\s([A-Z])(?:\s|\b)`).ReplaceAllString(s, "$1$2")
 	// Handle exceptions.
-	if except != "" {
-		for _, e := range strings.Fields(except) {
-			// (?i) case-insensitive
-			s = regexp.MustCompile(`(?i)`+e+`(?:\b)`).ReplaceAllString(s, e)
-		}
+	for _, e := range except {
+		// (?i) case-insensitive
+		s = regexp.MustCompile(`(?i)`+e+`(?:\b)`).ReplaceAllString(s, e)
 	}
 	// Support multiple word input by stripping out all double spaces created.
 	s = regexp.MustCompile(`(\s\s)`).ReplaceAllString(s, " ")
