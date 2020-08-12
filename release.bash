@@ -14,6 +14,9 @@ y | yes | ok) ;;
     ;;
 esac
 
+# avoid git tag xxxx was not made against commit ...
+echo $newtag >> .version
+
 git status
 git add . &&
     git commit -m "$newcmmt" &&
