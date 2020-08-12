@@ -15,9 +15,8 @@ import (
 
 const ellipsis = "..."
 
-// DeObfuscate de-obfuscates a CFWheels obfuscateParam or
-//  Obfuscate()
-// obfuscated string.
+// DeObfuscate de-obfuscates a CFWheels obfuscateParam or a string mutated by
+// Obfuscate().
 func DeObfuscate(s string) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if _, err := strconv.Atoi(s); err == nil || len(s) < 2 {
