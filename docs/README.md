@@ -26,13 +26,13 @@ import "github.com/bengarrett/cfw"
 
 func main() {
 
-	// Obfuscate / DeObfuscate
-	println(cfw.Obfuscate("1234"))
+    // Obfuscate / DeObfuscate
+    println(cfw.Obfuscate("1234"))
     println(cfw.DeObfuscate("a4363c"))
     
     // Excerpt
-	println(cfw.Excerpt(
-		"CFWheels: testing the excerpt view helper to see if it works or not.",
+    println(cfw.Excerpt(
+	"CFWheels: testing the excerpt view helper to see if it works or not.",
         "[more]", "excerpt view helper", 10))
 
     // Humanize
@@ -71,20 +71,28 @@ Will print
 # Obfuscate / DeObfuscate
 a4363c
 1234
+
 # Excerpt
 [more]sting the excerpt view helper to see if[more]
+
 # Humanize
 Wheels Is A Framework
+
 # Hyphenize
 wheels-is-a-framework
+
 # StripLinks
 Go to the <strong>GitHub</strong> repo!
+
 # StripTags
 Go to the GitHub repo!
+
 # TimeDistance
 less than 10 seconds
+
 # Truncate
 CFW contains...
+
 # WordTruncate
 CFW contains Go ports...
 CFW contains Go 🥰
