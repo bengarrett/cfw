@@ -23,6 +23,7 @@ goreleaser --release-notes docs/changelog.md --rm-dist &&
     go get github.com/bengarrett/cfw
 
 # notes
+
 # to delete a local tag
 # git tag --delete tagname
 # to delete a remote tag
