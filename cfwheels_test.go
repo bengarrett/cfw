@@ -2,6 +2,7 @@ package cfw
 
 import (
 	"fmt"
+	"log"
 	"testing"
 	"time"
 )
@@ -12,15 +13,13 @@ func ExampleDeObfuscate() {
 }
 
 func TestDeObfuscate(t *testing.T) {
-	type args struct {
-		s string
-	}
 	tests := []struct {
 		name string
 		s    string
 		want string
 	}{
-		// values https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/deobfuscateparam.cfc
+		// values:
+		// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/deobfuscateparam.cfc
 		{"empty", "", ""},
 		{"ok 1", "9b1c6", "1"},
 		{"ok 2", "eb77359232", "999999999"},
@@ -83,8 +82,8 @@ func TestExcerpt(t *testing.T) {
 }
 
 func ExampleHumanize() {
-	fmt.Println(Humanize("helloWorldExample", nil))
-	fmt.Println(Humanize("golangModOrVgo?", []string{"MOD", "VGO"}))
+	fmt.Println(Humanize("helloWorldExample", []string{}...))
+	fmt.Println(Humanize("golangModOrVgo?", []string{"MOD", "VGO"}...))
 	// Output: Hello World Example
 	// Golang MOD Or VGO?
 }
@@ -111,7 +110,7 @@ func TestHumanize(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Humanize(tt.args.s, tt.args.except); got != tt.want {
+			if got := Humanize(tt.args.s, tt.args.except...); got != tt.want {
 				t.Errorf("Humanize() = %v, want %v", got, tt.want)
 			}
 		})
@@ -171,8 +170,8 @@ func TestObfuscate(t *testing.T) {
 		{"", "69247541", "c06d44215"},
 		{"", "0413", "0413"},
 		{"", "per", "per"},
-		// in CFWheels this fails but in Go it returns a429646180a
-		//{"", "1111111111", "1111111111"},
+		// in CFWheels this test fails but in Go it returns a429646180a
+		// {"", "1111111111", "1111111111"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -216,7 +215,8 @@ func ExampleStripLinks() {
 
 func TestStripLinks(t *testing.T) {
 	// values: https://github.com/cfwheels/cfwheels/blob/9eea7a6ac77956c8825e037f2e3e6b8c0f346267/wheels/tests/view/sanitize/striptags.cfc
-	str := `this <a href="http://www.google.com" title="google">is</a> a <a href="mailto:someone@example.com" title="invalid email">test</a> to <a name="anchortag">see</a> if this works or not.`
+	str := `this <a href="http://www.google.com" title="google">is</a> a <a href="mailto:someone@example.com" title="invalid email">` +
+		`test</a> to <a name="anchortag">see</a> if this works or not.`
 	emoji := `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
 	tests := []struct {
 		name string
@@ -242,8 +242,10 @@ func ExampleStripTags() {
 }
 
 func TestStripTags(t *testing.T) {
-	// values: // https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/view/text/excerpt.cfc
-	str := `<h1>this</h1><p><a href="http://www.google.com" title="google">is</a></p><p>a <a href="mailto:someone@example.com" title="invalid email">test</a> to<br><a name="anchortag">see</a> if this works or not.</p>`
+	// values:
+	// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/view/text/excerpt.cfc
+	str := `<h1>this</h1><p><a href="http://www.google.com" title="google">is</a></p><p>a ` +
+		`<a href="mailto:someone@example.com" title="invalid email">test</a> to<br><a name="anchortag">see</a> if this works or not.</p>`
 	emoji := `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
 	tests := []struct {
 		name string
@@ -265,15 +267,27 @@ func TestStripTags(t *testing.T) {
 
 func ExampleTimeDistance() {
 	const layout = "2006 Jan 2"
-	f, _ := time.Parse(layout, "2000 Jan 1")
-	t, _ := time.Parse(layout, "2020 Jun 30")
+	f, err := time.Parse(layout, "2000 Jan 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	t, err := time.Parse(layout, "2020 Jun 30")
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(TimeDistance(f, t, false))
 	// Output: over 20 years
 }
 
 func ExampleTimeDistance_seconds() {
-	f, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z07:00")
-	t, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:10Z07:00")
+	f, err := time.Parse(time.RFC3339, "2006-01-02T15:04:06+07:00")
+	if err != nil {
+		log.Fatal(err)
+	}
+	t, err := time.Parse(time.RFC3339, "2006-01-02T15:04:10+07:00")
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(TimeDistance(f, t, true))
 	// Output: less than 5 seconds
 }
@@ -384,7 +398,7 @@ func TestWordTruncate(t *testing.T) {
 	}
 }
 
-// Test unique examples used in README.md
+// Test unique examples used in README.md.
 func TestReadmeExamples(t *testing.T) {
 	var a, e, s string
 	s = `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`

@@ -13,6 +13,8 @@ import (
 	"unicode/utf8"
 )
 
+const ellipsis = "..."
+
 // DeObfuscate de-obfuscates a CFWheels obfuscateParam or
 //  Obfuscate()
 // obfuscated string.
@@ -22,47 +24,48 @@ func DeObfuscate(s string) string {
 		return s
 	}
 	// De-obfuscate string.
-	new := s[2:] // last 2 chars
-	zi, err := strconv.ParseInt(new, 16, 0)
+	tail := s[2:] // last 2 chars
+	zi, err := strconv.ParseInt(tail, 16, 0)
 	if err != nil {
 		return s
 	}
-	zi = zi ^ 461 // bitxor
+	zi ^= 461 // bitxor
 	zs := strconv.Itoa(int(zi))
 	l := len(zs) - 1
-	new = ""
+	tail = ""
 	for i := 0; i < l; i++ {
 		f := zs[l-i:][:1]
-		new += f
+		tail += f
 	}
 	// Create checks.
 	ct := 0
-	l = len(new)
+	l = len(tail)
 	for i := 0; i < l; i++ {
-		chr := new[i : i+1]
-		rvi, err := strconv.Atoi(chr)
-		if err != nil {
+		chr := tail[i : i+1]
+		rvi, errl := strconv.Atoi(chr)
+		if errl != nil {
 			return s
 		}
-		ct = ct + rvi
+		ct += rvi
 	}
 	// Run checks.
 	ci, err := strconv.ParseInt(s[:2], 16, 0)
 	if err != nil {
 		return s
 	}
-	c2 := strconv.FormatInt(int64(ci), 10)
-	if strconv.FormatInt(int64(ct+154), 10) != c2 {
+	c2 := strconv.FormatInt(ci, 10)
+	const unknown = 154
+	if strconv.FormatInt(int64(ct+unknown), 10) != c2 {
 		return s
 	}
-	return new
+	return tail
 }
 
 // Excerpt replaces n characters from s which match the first instance of a given phrase.
 func Excerpt(s, replace, phrase string, n int) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
-		replace = "..."
+		replace = ellipsis
 	}
 	pos := strings.Index(s, phrase)
 	if pos < 0 {
@@ -90,7 +93,7 @@ func Excerpt(s, replace, phrase string, n int) string {
 }
 
 // Humanize returns readable text by separating camelCase strings to multiple, capitalized words.
-func Humanize(s string, except []string) string {
+func Humanize(s string, except ...string) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/632ea90547da368cddd77cefe17f42a7eda871e0/wheels/global/util.cfm
 	// Add a space before every capitalized word.
 	s = regexp.MustCompile(`([A-Z])`).ReplaceAllString(s, " $1")
@@ -120,7 +123,7 @@ func Hyphenize(s string) string {
 func Obfuscate(s string) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	// Make sure string doesn't start with a zero.
-	if len(s) <= 0 || s[0] == '0' {
+	if s == "" || s[0] == '0' {
 		return s
 	}
 	atoi, err := strconv.Atoi(s)
@@ -165,58 +168,65 @@ func StripTags(s string) string {
 }
 
 // TimeDistance describes the difference between two time values.
-func TimeDistance(from time.Time, to time.Time, seconds bool) string {
+func TimeDistance(from, to time.Time, seconds bool) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	delta := to.Sub(from)
-	s, m, h := int(delta.Seconds()), int(delta.Minutes()), int(delta.Hours())
-	var days, months, years int
+	sec, mnt, hrs := int(delta.Seconds()), int(delta.Minutes()), int(delta.Hours())
+	var d, m, y int
+	const (
+		min, five, ten, twenty, forty         = 60, 5, 10, 20, 40
+		parthour, abouthour, hours, day, days = 45, 90, 1440, 2880, 43200
+		month, months, year, years, twoyears  = 86400, 525600, 657000, 919800, 1051200
+	)
 	switch {
-	case m <= 1:
-		if seconds != true {
+	case mnt <= 1:
+		if !seconds {
 			switch {
-			case s < 60:
+			case sec < min:
 				return "less than a minute"
 			default:
 				return "1 minute"
 			}
 		}
 		switch {
-		case s < 5:
+		case sec < five:
 			return "less than 5 seconds"
-		case s < 10:
+		case sec < ten:
 			return "less than 10 seconds"
-		case s < 20:
+		case sec < twenty:
 			return "less than 20 seconds"
-		case s < 40:
+		case sec < forty:
 			return "half a minute"
 		default:
 			return "1 minute"
 		}
-	case m < 45:
-		return fmt.Sprintf("%d minutes", m)
-	case m < 90:
+	case mnt < parthour:
+		return fmt.Sprintf("%d minutes", mnt)
+	case mnt < abouthour:
 		return "about 1 hour"
-	case m < 1440:
-		return fmt.Sprintf("about %d hours", h)
-	case m < 2880:
+	case mnt < hours:
+		return fmt.Sprintf("about %d hours", hrs)
+	case mnt < day:
 		return "1 day"
-	case m < 43200:
-		days = h / 24
-		return fmt.Sprintf("%d days", days)
-	case m < 86400:
+	case mnt < days:
+		const hoursinaday = 24
+		d = hrs / hoursinaday
+		return fmt.Sprintf("%d days", d)
+	case mnt < month:
 		return "about 1 month"
-	case m < 525600:
-		months = h / 730
-		return fmt.Sprintf("%d months", months)
-	case m < 657000:
+	case mnt < months:
+		const hoursinamonth = 730
+		m = hrs / hoursinamonth
+		return fmt.Sprintf("%d months", m)
+	case mnt < year:
 		return "about 1 year"
-	case m < 919800:
+	case mnt < years:
 		return "over 1 year"
-	case m < 1051200:
+	case mnt < twoyears:
 		return "almost 2 years"
 	default:
-		years = m / 525600
-		return fmt.Sprintf("over %d years", years)
+		y = mnt / months
+		return fmt.Sprintf("over %d years", y)
 	}
 }
 
@@ -224,7 +234,7 @@ func TimeDistance(from time.Time, to time.Time, seconds bool) string {
 func Truncate(s, replace string, n int) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
-		replace = "..."
+		replace = ellipsis
 	}
 	if utf8.RuneCountInString(s) <= n {
 		return s
@@ -236,7 +246,7 @@ func Truncate(s, replace string, n int) string {
 func WordTruncate(s, replace string, n int) string {
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
-		replace = "..."
+		replace = ellipsis
 	}
 	words := strings.Fields(s)
 	if len(words) >= utf8.RuneCountInString(s) {
@@ -263,7 +273,7 @@ func reverseInt(i int) (reverse int, err error) {
 	}
 	reverse, err = strconv.Atoi(str)
 	if err != nil {
-		return reverse, err
+		return 0, fmt.Errorf("reverseInt %d: %w", i, err)
 	}
-	return reverse, err
+	return reverse, nil
 }
