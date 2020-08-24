@@ -2,8 +2,8 @@
 
 ![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw) 
-[![api](https://img.shields.io/static/v1?label=api&message=docs&color=<COLOR>&style=flat)](https://pkg.go.dev/github.com/bengarrett/cfw)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/bengarrett/cfw)](https://github.com/bengarrett/cfw/releases)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/bengarrett/cfw)](https://pkg.go.dev/github.com/bengarrett/cfw)
 
 #### Package cfw contains ports of a few selected CFWheels v1 helpers that are used for string manipulation and have no Go equivalent.
 
