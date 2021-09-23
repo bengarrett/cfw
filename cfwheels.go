@@ -13,28 +13,30 @@ import (
 	"unicode/utf8"
 )
 
-const ellipsis = "..."
+const (
+	ellipsis    = "..."
+	hexadecimal = 16
+)
 
-// DeObfuscate de-obfuscates a CFWheels obfuscateParam or
-//  Obfuscate()
-// obfuscated string.
+// DeObfuscate de-obfuscates a CFWheels obfuscateParam or Obfuscate() obfuscated string.
 func DeObfuscate(s string) string {
+	const twoChrs, decimal = 2, 10
 	// CFML source: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
-	if _, err := strconv.Atoi(s); err == nil || len(s) < 2 {
+	if _, err := strconv.Atoi(s); err == nil || len(s) < twoChrs {
 		return s
 	}
 	// De-obfuscate string.
-	tail := s[2:] // last 2 chars
-	zi, err := strconv.ParseInt(tail, 16, 0)
+	tail := s[twoChrs:]
+	n, err := strconv.ParseInt(tail, hexadecimal, 0)
 	if err != nil {
 		return s
 	}
-	zi ^= 461 // bitxor
-	zs := strconv.Itoa(int(zi))
-	l := len(zs) - 1
+	n ^= 461 // bitxor
+	ns := strconv.Itoa(int(n))
+	l := len(ns) - 1
 	tail = ""
 	for i := 0; i < l; i++ {
-		f := zs[l-i:][:1]
+		f := ns[l-i:][:1]
 		tail += f
 	}
 	// Create checks.
@@ -42,20 +44,20 @@ func DeObfuscate(s string) string {
 	l = len(tail)
 	for i := 0; i < l; i++ {
 		chr := tail[i : i+1]
-		rvi, errl := strconv.Atoi(chr)
-		if errl != nil {
+		n, err1 := strconv.Atoi(chr)
+		if err1 != nil {
 			return s
 		}
-		ct += rvi
+		ct += n
 	}
 	// Run checks.
-	ci, err := strconv.ParseInt(s[:2], 16, 0)
+	ci, err := strconv.ParseInt(s[:2], hexadecimal, 0)
 	if err != nil {
 		return s
 	}
-	c2 := strconv.FormatInt(ci, 10)
+	c2 := strconv.FormatInt(ci, decimal)
 	const unknown = 154
-	if strconv.FormatInt(int64(ct+unknown), 10) != c2 {
+	if strconv.FormatInt(int64(ct+unknown), decimal) != c2 {
 		return s
 	}
 	return tail
@@ -83,7 +85,7 @@ func Excerpt(s, replace, phrase string, n int) string {
 		ep = pos + n
 		te = replace
 	}
-	var mid string
+	mid := ""
 	if ln := ep + len(phrase); ln >= len(s) {
 		mid = s[sp:]
 	} else {
@@ -150,7 +152,9 @@ func Obfuscate(s string) string {
 	// Base64 conversion.
 	a ^= 461
 	b += 154
-	return strconv.FormatInt(int64(b), 16) + strconv.FormatInt(int64(a), 16)
+	return fmt.Sprintf("%s%s",
+		strconv.FormatInt(int64(b), hexadecimal),
+		strconv.FormatInt(int64(a), hexadecimal))
 }
 
 // StripLinks removes all HTML links from a string leaving just the link text.
@@ -252,7 +256,7 @@ func WordTruncate(s, replace string, n int) string {
 	if len(words) >= utf8.RuneCountInString(s) {
 		return s
 	}
-	var str string
+	str := ""
 	for i, w := range words {
 		if i+1 >= n {
 			str += w
