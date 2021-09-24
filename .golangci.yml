@@ -1,6 +1,8 @@
 linters:
   enable-all: true
-  # disable:
-  #   - maligned
-  #   - prealloc
+  disable:
+    - scopelint
+    - interfacer
+    - golint
+    - maligned
   fast: false
