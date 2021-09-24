@@ -1,3 +1,9 @@
+## v1.3
+- Go v1.17 usage.
+- New `ReverseInt()` function.
+- Linter updates and fixes.
+- GitHub repository updates and fixes.
+
 ## v1.2
 
 - For use clarity, changed the type of `Humanize()` `except` argument from `[]string` to `...string`.<br>
