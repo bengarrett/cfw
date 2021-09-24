@@ -159,7 +159,7 @@ func Obfuscate(s string) string {
 	// Count the number of digits in s.
 	count := len(s)
 
-	ri, err := reverseInt(atoi)
+	ri, err := ReverseInt(atoi)
 	if err != nil {
 		return s
 	}
@@ -328,8 +328,8 @@ func WordTruncate(s, replace string, n int) string {
 	return str + replace
 }
 
-// reverseInt reverses an integer.
-func reverseInt(i int) (reverse int, err error) {
+// ReverseInt reverses an integer.
+func ReverseInt(i int) (int, error) {
 	// credit: Wade73
 	// http://stackoverflow.com/questions/35972561/reverse-int-golang
 	itoa, str := strconv.Itoa(i), ""
@@ -337,7 +337,7 @@ func reverseInt(i int) (reverse int, err error) {
 		str += string(itoa[x-1])
 	}
 
-	reverse, err = strconv.Atoi(str)
+	reverse, err := strconv.Atoi(str)
 	if err != nil {
 		return 0, fmt.Errorf("reverseInt %d: %w", i, err)
 	}
