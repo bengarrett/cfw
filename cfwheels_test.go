@@ -77,7 +77,7 @@ func TestExcerpt(t *testing.T) {
 		args args
 		want string
 	}{
-		{"empty", args{}, "..."},
+		{"empty", args{"", "", "", 0}, "..."},
 		{"1", args{s, "[more]", "CFWheels: testing the excerpt", 0}, "CFWheels: testing the excerpt[more]"},
 		{"2", args{s, "[more]", "testing the excerpt", 0}, "[more]testing the excerpt[more]"},
 		{"3", args{s, "[more]", "excerpt view helper", 10}, "[more]sting the excerpt view helper to see if[more]"},
@@ -368,7 +368,7 @@ func TestTimeDistance(t *testing.T) {
 		args args
 		want string
 	}{
-		{"empty", args{}, "less than a minute"},
+		{"empty", args{time.Time{}, time.Time{}, false}, "less than a minute"},
 		{"<1m", args{n, n.Add(time.Second * time.Duration(5-1)), false}, "less than a minute"},
 		{"<10s", args{n, n.Add(time.Second * time.Duration(10-1)), true}, "less than 10 seconds"},
 		{"<20s", args{n, n.Add(time.Second * time.Duration(20-1)), true}, "less than 20 seconds"},
@@ -422,7 +422,7 @@ func TestTruncate(t *testing.T) {
 		// values:
 		// https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a
 		// /wheels/tests/view/text/truncate.cfc
-		{"empty", args{}, ""},
+		{"empty", args{"", "", 0}, ""},
 		{"ok1", args{"this is a test to see if this works or not.", "[more]", 20}, "this is a test[more]"},
 		{"err1", args{"", "[more]", 20}, ""},
 		{"ok2", args{"this is a test to see if this works or not.", "", 20}, "this is a test to..."},
@@ -463,7 +463,7 @@ func TestWordTruncate(t *testing.T) {
 		// values:
 		// https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a
 		// /wheels/tests/view/text/wordtruncate.cfc
-		{"empty", args{}, ""},
+		{"empty", args{"", "", 0}, ""},
 		{"ok", args{"CFWheels is a framework for ColdFusion", "", 4}, "CFWheels is a framework..."},
 		{"emoji", args{"The quick brown 🦊 jumps over the lazy 🐕", "💬", 4}, "The quick brown 🦊💬"},
 	}

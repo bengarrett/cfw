@@ -100,8 +100,7 @@ func Excerpt(s, replace, phrase string, n int) string {
 		te = replace
 	}
 
-	mid := ""
-
+	var mid string
 	if ln := ep + len(phrase); ln >= len(s) {
 		mid = s[sp:]
 	} else {
@@ -210,12 +209,7 @@ func TimeDistance(from, to time.Time, seconds bool) string {
 	delta := to.Sub(from)
 	secs, mins, hrs := int(delta.Seconds()), int(delta.Minutes()), int(delta.Hours())
 
-	var d, m, y int
-
-	const (
-		parthour, abouthour, hours, day, days = 45, 90, 1440, 2880, 43200
-		month, months, year, years, twoyears  = 86400, 525600, 657000, 919800, 1051200
-	)
+	const hours, days, months, year, years, twoyears = 1440, 43200, 525600, 657000, 919800, 1051200
 
 	switch {
 	case mins <= 1:
@@ -224,26 +218,12 @@ func TimeDistance(from, to time.Time, seconds bool) string {
 		}
 
 		return lessMinAsSec(secs)
-	case mins < parthour:
-		return fmt.Sprintf("%d minutes", mins)
-	case mins < abouthour:
-		return "about 1 hour"
 	case mins < hours:
-		return fmt.Sprintf("about %d hours", hrs)
-	case mins < day:
-		return "1 day"
+		return lessHours(mins, hrs)
 	case mins < days:
-		const hoursinaday = 24
-		d = hrs / hoursinaday
-
-		return fmt.Sprintf("%d days", d)
-	case mins < month:
-		return "about 1 month"
+		return lessDays(mins, hrs)
 	case mins < months:
-		const hoursinamonth = 730
-		m = hrs / hoursinamonth
-
-		return fmt.Sprintf("%d months", m)
+		return lessMonths(mins, hrs)
 	case mins < year:
 		return "about 1 year"
 	case mins < years:
@@ -251,7 +231,7 @@ func TimeDistance(from, to time.Time, seconds bool) string {
 	case mins < twoyears:
 		return "almost 2 years"
 	default:
-		y = mins / months
+		y := mins / months
 
 		return fmt.Sprintf("over %d years", y)
 	}
@@ -282,6 +262,53 @@ func lessMinAsSec(secs int) string {
 		return "half a minute"
 	default:
 		return "1 minute"
+	}
+}
+
+func lessHours(mins, hrs int) string {
+	const parthour, abouthour, hours = 45, 90, 1440
+
+	switch {
+	case mins < parthour:
+		return fmt.Sprintf("%d minutes", mins)
+	case mins < abouthour:
+		return "about 1 hour"
+	case mins < hours:
+		return fmt.Sprintf("about %d hours", hrs)
+	default:
+		return ""
+	}
+}
+
+func lessDays(mins, hrs int) string {
+	const day, days = 2880, 43200
+
+	switch {
+	case mins < day:
+		return "1 day"
+	case mins < days:
+		const hoursinaday = 24
+		d := hrs / hoursinaday
+
+		return fmt.Sprintf("%d days", d)
+	default:
+		return ""
+	}
+}
+
+func lessMonths(mins, hrs int) string {
+	const month, months = 86400, 525600
+
+	switch {
+	case mins < month:
+		return "about 1 month"
+	case mins < months:
+		const hoursinamonth = 730
+		m := hrs / hoursinamonth
+
+		return fmt.Sprintf("%d months", m)
+	default:
+		return ""
 	}
 }
 
