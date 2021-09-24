@@ -1,25 +1,30 @@
-package cfw
+package cfw_test
 
 import (
 	"fmt"
 	"log"
 	"testing"
 	"time"
+
+	"github.com/bengarrett/cfw"
 )
 
 func ExampleDeObfuscate() {
-	fmt.Println(DeObfuscate("9b1c6"))
+	fmt.Println(cfw.DeObfuscate("9b1c6"))
 	// Output: 1
 }
 
 func TestDeObfuscate(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		s    string
 		want string
 	}{
 		// values:
-		// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/deobfuscateparam.cfc
+		// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82
+		// /wheels/tests/global/public/deobfuscateparam.cfc
 		{"empty", "", ""},
 		{"ok 1", "9b1c6", "1"},
 		{"ok 2", "eb77359232", "999999999"},
@@ -32,8 +37,10 @@ func TestDeObfuscate(t *testing.T) {
 		{"error 3", "1111111111", "1111111111"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DeObfuscate(tt.s); got != tt.want {
+			t.Parallel()
+			if got := cfw.DeObfuscate(tt.s); got != tt.want {
 				t.Errorf("DeObfuscate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -42,22 +49,29 @@ func TestDeObfuscate(t *testing.T) {
 
 func ExampleExcerpt() {
 	pangram := "The quick brown fox jumps over the lazy dog"
-	fmt.Println(Excerpt(pangram, "...", "The quick brown fox", 0))
-	fmt.Println(Excerpt(pangram, "...", "", 19))
-	fmt.Println(Excerpt(pangram, "🦊", "The quick brown ", 0))
+	fmt.Println(cfw.Excerpt(pangram, "...", "The quick brown fox", 0))
+	fmt.Println(cfw.Excerpt(pangram, "...", "", 19))
+	fmt.Println(cfw.Excerpt(pangram, "🦊", "The quick brown ", 0))
 	// Output: The quick brown fox...
 	// The quick brown fox...
 	// The quick brown 🦊
 }
 
 func TestExcerpt(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		s       string
 		replace string
 		phrase  string
 		n       int
 	}
-	const s = "CFWheels: testing the excerpt view helper to see if it works or not."
+
+	const (
+		s     = "CFWheels: testing the excerpt view helper to see if it works or not."
+		test4 = "CFWheels: testing the excerpt view helper to see if it works or no[more]"
+	)
+
 	tests := []struct {
 		name string
 		args args
@@ -67,14 +81,16 @@ func TestExcerpt(t *testing.T) {
 		{"1", args{s, "[more]", "CFWheels: testing the excerpt", 0}, "CFWheels: testing the excerpt[more]"},
 		{"2", args{s, "[more]", "testing the excerpt", 0}, "[more]testing the excerpt[more]"},
 		{"3", args{s, "[more]", "excerpt view helper", 10}, "[more]sting the excerpt view helper to see if[more]"},
-		{"4", args{s, "[more]", "excerpt view helper", 25}, "CFWheels: testing the excerpt view helper to see if it works or no[more]"},
+		{"4", args{s, "[more]", "excerpt view helper", 25}, test4},
 		{"5", args{s, "[more]", "see if it works", 25}, "[more]e excerpt view helper to see if it works or not."},
 		{"6", args{s, "[more]", "jklsduiermobk", 25}, ""},
 		{"utf8", args{"The quick brown 🦊 jumps over the lazy 🐕", "💬", "brown 🦊", 0}, "💬brown 🦊💬"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Excerpt(tt.args.s, tt.args.replace, tt.args.phrase, tt.args.n); got != tt.want {
+			t.Parallel()
+			if got := cfw.Excerpt(tt.args.s, tt.args.replace, tt.args.phrase, tt.args.n); got != tt.want {
 				t.Errorf("Excerpt() = %v, want %v", got, tt.want)
 			}
 		})
@@ -82,23 +98,28 @@ func TestExcerpt(t *testing.T) {
 }
 
 func ExampleHumanize() {
-	fmt.Println(Humanize("helloWorldExample", []string{}...))
-	fmt.Println(Humanize("golangModOrVgo?", []string{"MOD", "VGO"}...))
+	fmt.Println(cfw.Humanize("helloWorldExample", []string{}...))
+	fmt.Println(cfw.Humanize("golangModOrVgo?", []string{"MOD", "VGO"}...))
 	// Output: Hello World Example
 	// Golang MOD Or VGO?
 }
 
 func TestHumanize(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		s      string
 		except []string
 	}
+
 	tests := []struct {
 		name string
 		args args
 		want string
 	}{
-		// values https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/humanize.cfc
+		// values
+		// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82
+		// /wheels/tests/global/public/humanize.cfc
 		{"empty", args{"", nil}, ""},
 		{"lcase", args{"wheelsIsAFramework", nil}, "Wheels Is A Framework"},
 		{"title", args{"WheelsIsAFramework", nil}, "Wheels Is A Framework"},
@@ -109,8 +130,10 @@ func TestHumanize(t *testing.T) {
 		{"emoji", args{"theQuickBrown🦊JumpsOverTheLazy🐕", nil}, "The Quick Brown🦊 Jumps Over The Lazy🐕"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Humanize(tt.args.s, tt.args.except...); got != tt.want {
+			t.Parallel()
+			if got := cfw.Humanize(tt.args.s, tt.args.except...); got != tt.want {
 				t.Errorf("Humanize() = %v, want %v", got, tt.want)
 			}
 		})
@@ -118,17 +141,21 @@ func TestHumanize(t *testing.T) {
 }
 
 func ExampleHyphenize() {
-	fmt.Println(Hyphenize("aTourOfGo"))
+	fmt.Println(cfw.Hyphenize("aTourOfGo"))
 	// Output: a-tour-of-go
 }
 
 func TestHyphenize(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		s    string
 		want string
 	}{
-		// values https://github.com/cfwheels/cfwheels/blob/13b9cb72f52a4edc7981ae572d050f8116af57ef/wheels/tests/global/strings.cfc
+		// values
+		// https://github.com/cfwheels/cfwheels/blob/13b9cb72f52a4edc7981ae572d050f8116af57ef
+		// /wheels/tests/global/strings.cfc
 		{"empty", "", ""},
 		{"ok 1", "wheelsIsAFramework", "wheels-is-a-framework"},
 		{"ok 2", "WheelsIsAFramework", "wheels-is-a-framework"},
@@ -139,8 +166,10 @@ func TestHyphenize(t *testing.T) {
 		{"emoji", "TheQuickBrown🦊JumpsOverTheLazy🐕", "the-quick-brown🦊-jumps-over-the-lazy🐕"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Hyphenize(tt.s); got != tt.want {
+			t.Parallel()
+			if got := cfw.Hyphenize(tt.s); got != tt.want {
 				t.Errorf("Hyphenize() = %v, want %v", got, tt.want)
 			}
 		})
@@ -148,19 +177,23 @@ func TestHyphenize(t *testing.T) {
 }
 
 func ExampleObfuscate() {
-	fmt.Println(Obfuscate("1"))
-	fmt.Println(Obfuscate("5551234"))
+	fmt.Println(cfw.Obfuscate("1"))
+	fmt.Println(cfw.Obfuscate("5551234"))
 	// Output: 9b1c6
 	// b3da865e
 }
 
 func TestObfuscate(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		s    string
 		want string
 	}{
-		// values https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/global/public/obfuscateparam.cfc
+		// values
+		// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82
+		// /wheels/tests/global/public/obfuscateparam.cfc
 		{"empty", "", ""},
 		{"", "999999999", "eb77359232"},
 		{"", "0162823571", "0162823571"},
@@ -174,15 +207,19 @@ func TestObfuscate(t *testing.T) {
 		// {"", "1111111111", "1111111111"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Obfuscate(tt.s); got != tt.want {
+			t.Parallel()
+			if got := cfw.Obfuscate(tt.s); got != tt.want {
 				t.Errorf("Obfuscate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_reverseInt(t *testing.T) {
+func TestReverseInt(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		i       int
@@ -195,10 +232,13 @@ func Test_reverseInt(t *testing.T) {
 		{"leading 0", 0005, 5, false}, // expected behaviour?
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := reverseInt(tt.i)
+			t.Parallel()
+			got, err := cfw.ReverseInt(tt.i)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("reverseInt() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if got != tt.want {
@@ -209,13 +249,18 @@ func Test_reverseInt(t *testing.T) {
 }
 
 func ExampleStripLinks() {
-	fmt.Println(StripLinks(`<a href="https://golang.org">The Go Programming Language</a>.`))
+	fmt.Println(cfw.StripLinks(`<a href="https://golang.org">The Go Programming Language</a>.`))
 	// Output: The Go Programming Language.
 }
 
 func TestStripLinks(t *testing.T) {
-	// values: https://github.com/cfwheels/cfwheels/blob/9eea7a6ac77956c8825e037f2e3e6b8c0f346267/wheels/tests/view/sanitize/striptags.cfc
-	str := `this <a href="http://www.google.com" title="google">is</a> a <a href="mailto:someone@example.com" title="invalid email">` +
+	// values:
+	// https://github.com/cfwheels/cfwheels/blob/9eea7a6ac77956c8825e037f2e3e6b8c0f346267
+	// /wheels/tests/view/sanitize/striptags.cfc
+	t.Parallel()
+
+	str := `this <a href="http://www.google.com" title="google">` +
+		`is</a> a <a href="mailto:someone@example.com" title="invalid email">` +
 		`test</a> to <a name="anchortag">see</a> if this works or not.`
 	emoji := `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
 	tests := []struct {
@@ -227,9 +272,12 @@ func TestStripLinks(t *testing.T) {
 		{"string", str, "this is a test to see if this works or not."},
 		{"emoji", emoji, "The quick <b>brown 🦊</b> jumps over the lazy 🐕"},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := StripLinks(tt.s); got != tt.want {
+			t.Parallel()
+			if got := cfw.StripLinks(tt.s); got != tt.want {
 				t.Errorf("StripLinks() = %v, want %v", got, tt.want)
 			}
 		})
@@ -237,15 +285,19 @@ func TestStripLinks(t *testing.T) {
 }
 
 func ExampleStripTags() {
-	fmt.Println(StripTags(`<h1><a href="https://golang.org">The Go Programming Language</a>.</h1>`))
+	fmt.Println(cfw.StripTags(`<h1><a href="https://golang.org">The Go Programming Language</a>.</h1>`))
 	// Output: The Go Programming Language.
 }
 
 func TestStripTags(t *testing.T) {
 	// values:
-	// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82/wheels/tests/view/text/excerpt.cfc
+	// https://github.com/cfwheels/cfwheels/blob/1c3b9d6db79cdfbfbe49ae6816f6dc96262ccf82
+	// /wheels/tests/view/text/excerpt.cfc
+	t.Parallel()
+
 	str := `<h1>this</h1><p><a href="http://www.google.com" title="google">is</a></p><p>a ` +
-		`<a href="mailto:someone@example.com" title="invalid email">test</a> to<br><a name="anchortag">see</a> if this works or not.</p>`
+		`<a href="mailto:someone@example.com" title="invalid email">test</a> to<br>` +
+		`<a name="anchortag">see</a> if this works or not.</p>`
 	emoji := `The quick <b><a href="https://example.com">brown 🦊</a></b> jumps over the lazy 🐕`
 	tests := []struct {
 		name string
@@ -256,9 +308,12 @@ func TestStripTags(t *testing.T) {
 		{"string", str, "thisisa test tosee if this works or not."},
 		{"emoji", emoji, "The quick brown 🦊 jumps over the lazy 🐕"},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := StripTags(tt.s); got != tt.want {
+			t.Parallel()
+			if got := cfw.StripTags(tt.s); got != tt.want {
 				t.Errorf("StripTags() = %v, want %v", got, tt.want)
 			}
 		})
@@ -267,15 +322,18 @@ func TestStripTags(t *testing.T) {
 
 func ExampleTimeDistance() {
 	const layout = "2006 Jan 2"
+
 	f, err := time.Parse(layout, "2000 Jan 1")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	t, err := time.Parse(layout, "2020 Jun 30")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(TimeDistance(f, t, false))
+
+	fmt.Println(cfw.TimeDistance(f, t, false))
 	// Output: over 20 years
 }
 
@@ -284,21 +342,27 @@ func ExampleTimeDistance_seconds() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	t, err := time.Parse(time.RFC3339, "2006-01-02T15:04:10+07:00")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(TimeDistance(f, t, true))
+
+	fmt.Println(cfw.TimeDistance(f, t, true))
 	// Output: less than 5 seconds
 }
 
 func TestTimeDistance(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		from time.Time
 		to   time.Time
 		sec  bool
 	}
-	var n = time.Now()
+
+	n := time.Now()
+
 	tests := []struct {
 		name string
 		args args
@@ -324,8 +388,10 @@ func TestTimeDistance(t *testing.T) {
 		{">2y", args{n, n.Add(time.Minute * time.Duration(1051200)), false}, "over 2 years"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TimeDistance(tt.args.from, tt.args.to, tt.args.sec); got != tt.want {
+			t.Parallel()
+			if got := cfw.TimeDistance(tt.args.from, tt.args.to, tt.args.sec); got != tt.want {
 				t.Errorf("TimeDistance() = %v, want %v", got, tt.want)
 			}
 		})
@@ -333,24 +399,29 @@ func TestTimeDistance(t *testing.T) {
 }
 
 func ExampleTruncate() {
-	fmt.Println(Truncate("Go is an open source programming language", "", 8))
-	fmt.Println(Truncate("Go is an open source programming language", "?", 6))
+	fmt.Println(cfw.Truncate("Go is an open source programming language", "", 8))
+	fmt.Println(cfw.Truncate("Go is an open source programming language", "?", 6))
 	// Output: Go is...
 	// Go is?
 }
 
 func TestTruncate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		s       string
 		replace string
 		n       int
 	}
+
 	tests := []struct {
 		name string
 		args args
 		want string
 	}{
-		// values: https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a/wheels/tests/view/text/truncate.cfc
+		// values:
+		// https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a
+		// /wheels/tests/view/text/truncate.cfc
 		{"empty", args{}, ""},
 		{"ok1", args{"this is a test to see if this works or not.", "[more]", 20}, "this is a test[more]"},
 		{"err1", args{"", "[more]", 20}, ""},
@@ -358,8 +429,10 @@ func TestTruncate(t *testing.T) {
 		{"emoji", args{"The quick brown 🦊 jumps over the lazy 🐕", "💬", 21}, "The quick brown 🦊💬"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Truncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
+			t.Parallel()
+			if got := cfw.Truncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
 				t.Errorf("Truncate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -367,31 +440,38 @@ func TestTruncate(t *testing.T) {
 }
 
 func ExampleWordTruncate() {
-	fmt.Println(WordTruncate("Go is an open source programming language", "", 2))
-	fmt.Println(WordTruncate("Go is an open source programming language", "?", 2))
+	fmt.Println(cfw.WordTruncate("Go is an open source programming language", "", 2))
+	fmt.Println(cfw.WordTruncate("Go is an open source programming language", "?", 2))
 	// Output: Go is...
 	// Go is?
 }
 
 func TestWordTruncate(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		s       string
 		replace string
 		n       int
 	}
+
 	tests := []struct {
 		name string
 		args args
 		want string
 	}{
-		// values: https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a/wheels/tests/view/text/wordtruncate.cfc
+		// values:
+		// https://github.com/cfwheels/cfwheels/blob/9738bd71e7b8632587cd09a0a2d7d3e779700a7a
+		// /wheels/tests/view/text/wordtruncate.cfc
 		{"empty", args{}, ""},
 		{"ok", args{"CFWheels is a framework for ColdFusion", "", 4}, "CFWheels is a framework..."},
 		{"emoji", args{"The quick brown 🦊 jumps over the lazy 🐕", "💬", 4}, "The quick brown 🦊💬"},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := WordTruncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
+			t.Parallel()
+			if got := cfw.WordTruncate(tt.args.s, tt.args.replace, tt.args.n); got != tt.want {
 				t.Errorf("WordTruncate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -400,34 +480,45 @@ func TestWordTruncate(t *testing.T) {
 
 // Test unique examples used in README.md.
 func TestReadmeExamples(t *testing.T) {
+	t.Parallel()
+
 	var a, e, s string
 	s = `Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`
-	a = StripLinks(s)
+	a = cfw.StripLinks(s)
+
 	e = "Go to the <strong>GitHub</strong> repo!"
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
-	a = StripTags(s)
+
+	a = cfw.StripTags(s)
 	e = "Go to the GitHub repo!"
+
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+
 	from := time.Now()
 	to := from.Add(time.Second * time.Duration(7)) // add 7 seconds
-	a = TimeDistance(from, to, true)
+	a = cfw.TimeDistance(from, to, true)
 	e = "less than 10 seconds"
+
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+
 	s = `CFW contains Go ports of a few selected CFWheels helpers.`
-	a = Truncate(s, "", 15)
+	a = cfw.Truncate(s, "", 15)
 	e = "CFW contains..."
+
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
+
 	s = `CFW contains Go ports of a few selected CFWheels helpers.`
-	a = WordTruncate(s, "", 4)
+	a = cfw.WordTruncate(s, "", 4)
 	e = "CFW contains Go ports..."
+
 	if a != e {
 		t.Errorf("mismatch, got: %v, want: %v", a, e)
 	}
