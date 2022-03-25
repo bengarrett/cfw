@@ -6,5 +6,5 @@ linters:
     - interfacer
     - golint
     - maligned
-    - fobidigo
+    - varnamelen
   fast: false

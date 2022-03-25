@@ -11,6 +11,9 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const (
@@ -128,8 +131,8 @@ func Humanize(s string, except ...string) string {
 	s = regexp.MustCompile(`(\s\s)`).ReplaceAllString(s, " ")
 	// Capitalize the first letter and trim final result.
 	s = strings.TrimPrefix(s, " ")
-
-	return strings.Title(s)
+	c := cases.Title(language.English, cases.NoLower)
+	return c.String(s)
 }
 
 // Hyphenize converts camelCase strings to a lowercase hyphened string.
