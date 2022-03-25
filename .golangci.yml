@@ -7,4 +7,5 @@ linters:
     - golint
     - maligned
     - varnamelen
+    - forbidigo
   fast: false

@@ -13,9 +13,10 @@ func main() {
 	fmt.Println(cfw.DeObfuscate("a4363c"))
 
 	// Excerpt
+	chars := 10
 	fmt.Println(cfw.Excerpt(
 		"CFWheels: testing the excerpt view helper to see if it works or not.",
-		"[more]", "excerpt view helper", 10))
+		"[more]", "excerpt view helper", chars))
 
 	// Humanize
 	fmt.Println(cfw.Humanize("wheelsIsAFramework", ""))
@@ -32,16 +33,21 @@ func main() {
 		`Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`))
 
 	// TimeDistance
-	add7Seconds := time.Now().Add(time.Second * time.Duration(7))
-	fmt.Println(cfw.TimeDistance(time.Now(), add7Seconds, true))
+	const seven = time.Second * time.Duration(7)
+
+	fmt.Println(cfw.TimeDistance(time.Now(), time.Now().Add(seven), true))
 
 	// Truncate
+	chars = 15
 	fmt.Println(cfw.Truncate(
-		"CFW contains Go ports of a few selected CFWheels helpers.", "", 15))
+		"CFW contains Go ports of a few selected CFWheels helpers.", "", chars))
 
 	// WordTruncate
+	words := 4
 	fmt.Println(cfw.WordTruncate(
-		"CFW contains Go ports of a few selected CFWheels helpers.", "", 4))
+		"CFW contains Go ports of a few selected CFWheels helpers.", "", words))
+
+	words = 3
 	fmt.Println(cfw.WordTruncate(
-		"CFW contains Go ports of a few selected CFWheels helpers.", " 🥰", 3))
+		"CFW contains Go ports of a few selected CFWheels helpers.", " 🥰", words))
 }

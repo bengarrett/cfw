@@ -132,6 +132,7 @@ func Humanize(s string, except ...string) string {
 	// Capitalize the first letter and trim final result.
 	s = strings.TrimPrefix(s, " ")
 	c := cases.Title(language.English, cases.NoLower)
+
 	return c.String(s)
 }
 
