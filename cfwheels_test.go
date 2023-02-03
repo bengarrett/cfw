@@ -229,7 +229,7 @@ func TestReverseInt(t *testing.T) {
 		{"zero", 0, 0, false},
 		{"ok", 2345678, 8765432, false},
 		{"505", 505, 505, false},
-		{"leading 0", 0005, 5, false}, // expected behaviour?
+		{"leading 0", 0o005, 5, false}, // expected behaviour?
 	}
 	for _, tt := range tests {
 		tt := tt

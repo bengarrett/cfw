@@ -1,11 +1,17 @@
 linters:
   enable-all: true
-  disable:
-    - gofumpt
-    - scopelint
-    - interfacer
-    - golint
-    - maligned
-    - varnamelen
-    - forbidigo
   fast: false
+  disable:
+    - varnamelen
+    - wsl
+  # deprecated
+    - structcheck
+    - exhaustivestruct
+    - ifshort
+    - varcheck
+    - deadcode
+    - nosnakecase
+    - scopelint
+    - golint
+    - interfacer
+    - maligned

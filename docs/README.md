@@ -1,9 +1,9 @@
 # cfw
 
-![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/bengarrett/cfw)](https://pkg.go.dev/github.com/bengarrett/cfw)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bengarrett/cfw)](https://goreportcard.com/report/github.com/bengarrett/cfw)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/bengarrett/cfw)](https://github.com/bengarrett/cfw/releases)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/bengarrett/cfw)](https://pkg.go.dev/github.com/bengarrett/cfw)
+![GitHub](https://img.shields.io/github/license/bengarrett/cfw?style=flat)
 
 Package cfw contains ports of a few selected CFWheels v1 helpers that are used for string manipulation and have no Go equivalent.
 
@@ -71,38 +71,20 @@ func main() {
 ```
 
 ```bash
-go run .
-```
+$ go run . example/main.go
 
-```
-# Obfuscate / DeObfuscate
 a4363c
 1234
-
-# Excerpt
 [more]sting the excerpt view helper to see if[more]
-
-# Humanize
 Wheels Is A Framework
-
-# Hyphenize
 wheels-is-a-framework
-
-# StripLinks
 Go to the <strong>GitHub</strong> repo!
-
-# StripTags
 Go to the GitHub repo!
-
-# TimeDistance
 less than 10 seconds
-
-# Truncate
 CFW contains...
-
-# WordTruncate
 CFW contains Go ports...
 CFW contains Go 🥰
+
 ```
 
 #### Copyright © 2021 [Ben Garrett](mailto:code.by.ben@gmail.com) - [MIT License](https://pkg.go.dev/github.com/fluhus/godoc-tricks?tab=licenses)
