@@ -17,64 +17,58 @@ import (
 )
 
 const (
-	ellipsis    = "..."
-	hexadecimal = 16
+	ellipsis     = "..."
+	hexadecimal  = 16
+	obfuscateXOR = 461
+	obfuscateSum = 154
 )
 
-// DeObfuscate de-obfuscates a CFWheels obfuscateParam or Obfuscate() obfuscated string.
+// Deobfuscate the obfuscated string, or return the original string.
+// This is a port of a CFWheels framework function programmed in Coldfusion (CFML).
+// See: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L508
 func DeObfuscate(s string) string {
-	const twoChrs, decimal = 2, 10
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
-	if _, err := strconv.Atoi(s); err == nil || len(s) < twoChrs {
+	const checksum, decimal = 2, 10
+	if len(s) < checksum {
 		return s
 	}
-	// De-obfuscate string.
-	tail := s[twoChrs:]
-	n, err := strconv.ParseInt(tail, hexadecimal, 0)
-
+	if i, _ := strconv.Atoi(s); i > 0 {
+		return s
+	}
+	// deobfuscate string
+	num, err := strconv.ParseInt(s[checksum:], hexadecimal, 0)
 	if err != nil {
 		return s
 	}
-
-	n ^= 461 // bitxor
-	ns := strconv.Itoa(int(n))
-	l := len(ns) - 1
-	tail = ""
-
+	num ^= obfuscateXOR
+	baseNum := strconv.Itoa(int(num))
+	l := len(baseNum) - 1
+	value := ""
 	for i := 0; i < l; i++ {
-		f := ns[l-i:][:1]
-		tail += f
+		f := baseNum[l-i:][:1]
+		value += f
 	}
-	// Create checks.
-	ct := 0
-	l = len(tail)
-
+	// create checks
+	l = len(value)
+	chksumTest := 0
 	for i := 0; i < l; i++ {
-		chr := tail[i : i+1]
+		chr := value[i : i+1]
 		n, err1 := strconv.Atoi(chr)
-
 		if err1 != nil {
 			return s
 		}
-
-		ct += n
+		chksumTest += n
 	}
-	// Run checks.
-	ci, err := strconv.ParseInt(s[:2], hexadecimal, 0)
+	// run checks
+	chksum, err := strconv.ParseInt(s[:2], hexadecimal, 0)
 	if err != nil {
 		return s
 	}
-
-	c2 := strconv.FormatInt(ci, decimal)
-
-	const unknown = 154
-
-	if strconv.FormatInt(int64(ct+unknown), decimal) != c2 {
+	chksumX := strconv.FormatInt(chksum, decimal)
+	chksumY := strconv.FormatInt(int64(chksumTest+obfuscateSum), decimal)
+	if err := chksumX != chksumY; err {
 		return s
 	}
-
-	return tail
+	return value
 }
 
 // Excerpt replaces n characters from s which match the first instance of a given phrase.
