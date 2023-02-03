@@ -24,7 +24,7 @@ const (
 )
 
 // Deobfuscate the obfuscated string, or return the original string.
-// This is a port of a CFWheels framework function programmed in Coldfusion (CFML).
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
 // See: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L508
 func DeObfuscate(s string) string {
 	const checksum, decimal = 2, 10
@@ -68,13 +68,14 @@ func DeObfuscate(s string) string {
 	if err := chksumX != chksumY; err {
 		return s
 	}
+
 	return value
 }
 
-// Excerpt replaces n characters from s which match the first instance of a given phrase.
+// Excerpt replaces n characters from s, which match the first instance of a given phrase.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// See: https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L68
 func Excerpt(s, replace, phrase string, n int) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
 		replace = ellipsis
 	}
@@ -108,10 +109,9 @@ func Excerpt(s, replace, phrase string, n int) string {
 }
 
 // Humanize returns readable text by separating camelCase strings to multiple, capitalized words.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/632ea90547da368cddd77cefe17f42a7eda871e0/wheels/global/util.cfm#L53
 func Humanize(s string, except ...string) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/632ea90547da368cddd77cefe17f42a7eda871e0/wheels/global/util.cfm
-	//
 	// Add a space before every capitalized word.
 	s = regexp.MustCompile(`([A-Z])`).ReplaceAllString(s, " $1")
 	// Fix abbreviations so they form a word again (example: aURLVariable).
@@ -140,70 +140,62 @@ func Hyphenize(s string) string {
 }
 
 // Obfuscate a numeric string to insecurely hide database primary key values when passed along a URL.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L483
 func Obfuscate(s string) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
-	//
-	// Make sure string doesn't start with a zero.
-	if s == "" || s[0] == '0' {
-		return s
-	}
-
-	atoi, err := strconv.Atoi(s)
+	i, err := strconv.Atoi(s)
 	if err != nil {
 		return s
 	}
-	// Count the number of digits in s.
-	count := len(s)
-
-	ri, err := ReverseInt(atoi)
+	// confirm the first digit of i isn't a zero
+	if s[0] == '0' {
+		return s
+	}
+	reverse, err := ReverseInt(i)
 	if err != nil {
 		return s
 	}
-
-	f64 := math.Pow10(count) + float64(ri)
-	// Keep a and b as int types.
-	a, b := int(f64), 0
-
-	for i := 1; i <= count; i++ {
-		// Slice individual digits from s and sum the results.
-		ps, err := strconv.Atoi(string(s[count-i]))
+	l := len(s)
+	a := int(math.Pow10(l) + float64(reverse))
+	b := 0
+	for i := 1; i <= l; i++ {
+		// slice and sum the individual digits
+		digit, err := strconv.Atoi(string(s[l-i]))
 		if err != nil {
 			return s
 		}
-
-		b += ps
+		b += digit
 	}
-	// Base64 conversion.
-	a ^= 461
-	b += 154
+	// base64 conversion
+	a ^= obfuscateXOR
+	b += obfuscateSum
 
 	return fmt.Sprintf("%s%s",
 		strconv.FormatInt(int64(b), hexadecimal),
-		strconv.FormatInt(int64(a), hexadecimal))
+		strconv.FormatInt(int64(a), hexadecimal),
+	)
 }
 
 // StripLinks removes all HTML links from a string leaving just the link text.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/daa7c43fc993cab00f52cf8ac881e6cc93c02fe1/wheels/view/sanitize.cfm#L3
 func StripLinks(s string) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/daa7c43fc993cab00f52cf8ac881e6cc93c02fe1/wheels/view/sanitize.cfm
 	return regexp.MustCompile(`<a.*?>(.*?)</a>`).ReplaceAllString(s, "$1")
 }
 
 // StripTags removes all HTML tags from a string.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/daa7c43fc993cab00f52cf8ac881e6cc93c02fe1/wheels/view/sanitize.cfm#L21
 func StripTags(s string) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/daa7c43fc993cab00f52cf8ac881e6cc93c02fe1/wheels/view/sanitize.cfm
-	s = regexp.MustCompile(`<\ *[a-z].*?>`).ReplaceAllString(s, "")
-	s = regexp.MustCompile(`<\ */\ *[a-z].*?>`).ReplaceAllString(s, "")
+	x := regexp.MustCompile(`<\ *[a-z].*?>`).ReplaceAllString(s, "")
 
-	return s
+	return regexp.MustCompile(`<\ */\ *[a-z].*?>`).ReplaceAllString(x, "")
 }
 
 // TimeDistance describes the difference between two time values.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L112
 func TimeDistance(from, to time.Time, seconds bool) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	delta := to.Sub(from)
 	secs, mins, hrs := int(delta.Seconds()), int(delta.Minutes()), int(delta.Hours())
 
@@ -311,9 +303,9 @@ func lessMonths(mins, hrs int) string {
 }
 
 // Truncate a string to the specified number and replace the trailing characters.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L20
 func Truncate(s, replace string, n int) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
 		replace = ellipsis
 	}
@@ -326,9 +318,9 @@ func Truncate(s, replace string, n int) string {
 }
 
 // WordTruncate truncates a string to the specified number of words and replaces the trailing characters.
+// This function is a port of a CFWheels framework function programmed in ColdFusion (CFML).
+// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm#L40
 func WordTruncate(s, replace string, n int) string {
-	// CFML source:
-	// https://github.com/cfwheels/cfwheels/blob/cf8e6da4b9a216b642862e7205345dd5fca34b54/wheels/global/misc.cfm
 	if replace == "" {
 		replace = ellipsis
 	}
