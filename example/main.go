@@ -2,52 +2,55 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/bengarrett/cfw"
 )
 
 func main() {
+	w := os.Stdout
+
 	// Obfuscate / DeObfuscate
-	fmt.Println(cfw.Obfuscate("1234"))
-	fmt.Println(cfw.DeObfuscate("a4363c"))
+	fmt.Fprintln(w, cfw.Obfuscate("1234"))
+	fmt.Fprintln(w, cfw.DeObfuscate("a4363c"))
 
 	// Excerpt
 	chars := 10
-	fmt.Println(cfw.Excerpt(
+	fmt.Fprintln(w, cfw.Excerpt(
 		"CFWheels: testing the excerpt view helper to see if it works or not.",
 		"[more]", "excerpt view helper", chars))
 
 	// Humanize
-	fmt.Println(cfw.Humanize("wheelsIsAFramework", ""))
+	fmt.Fprintln(w, cfw.Humanize("wheelsIsAFramework", ""))
 
 	// Hyphenize
-	fmt.Println(cfw.Hyphenize("wheelsIsAFramework"))
+	fmt.Fprintln(w, cfw.Hyphenize("wheelsIsAFramework"))
 
 	// StripLinks
-	fmt.Println(cfw.StripLinks(
+	fmt.Fprintln(w, cfw.StripLinks(
 		`Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`))
 
 	// StripTags
-	fmt.Println(cfw.StripTags(
+	fmt.Fprintln(w, cfw.StripTags(
 		`Go to the <strong><a href="https://github.com/bengarrett/cfw">GitHub</a></strong> repo!`))
 
 	// TimeDistance
 	const seven = time.Second * time.Duration(7)
 
-	fmt.Println(cfw.TimeDistance(time.Now(), time.Now().Add(seven), true))
+	fmt.Fprintln(w, cfw.TimeDistance(time.Now(), time.Now().Add(seven), true))
 
 	// Truncate
 	chars = 15
-	fmt.Println(cfw.Truncate(
+	fmt.Fprintln(w, cfw.Truncate(
 		"CFW contains Go ports of a few selected CFWheels helpers.", "", chars))
 
 	// WordTruncate
 	words := 4
-	fmt.Println(cfw.WordTruncate(
+	fmt.Fprintln(w, cfw.WordTruncate(
 		"CFW contains Go ports of a few selected CFWheels helpers.", "", words))
 
 	words = 3
-	fmt.Println(cfw.WordTruncate(
+	fmt.Fprintln(w, cfw.WordTruncate(
 		"CFW contains Go ports of a few selected CFWheels helpers.", " 🥰", words))
 }
